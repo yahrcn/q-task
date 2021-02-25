@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import { Link } from "react-router-dom/cjs/react-router-dom.min";
+import { Link } from "react-router-dom";
 import { setImages } from "../redux/actions";
 import { ROUTES } from "../routes";
 
@@ -29,6 +29,8 @@ class Slider extends React.Component {
       array: images,
       currentId: 0,
     };
+    this.handleNext = this.handleNext.bind(this);
+    this.handlePrev = this.handlePrev.bind(this);
   }
 
   componentDidMount() {
@@ -63,7 +65,7 @@ class Slider extends React.Component {
     return (
       <div className="page">
         <div className="sliderWrapper">
-          <div className="button" onClick={this.handlePrev.bind(this)}>
+          <div className="button" onClick={this.handlePrev}>
             prev
           </div>
           {this.state.remote ? (
@@ -76,7 +78,7 @@ class Slider extends React.Component {
             <img className="slider" alt="" src={images[this.state.currentId]} />
           )}
 
-          <div className="button" onClick={this.handleNext.bind(this)}>
+          <div className="button" onClick={this.handleNext}>
             next
           </div>
         </div>

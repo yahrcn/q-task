@@ -6,7 +6,6 @@ class Slider extends React.Component {
   componentDidMount() {
     fetch("https://imagesapi.osora.ru/", {
       method: "POST",
-      body: "none",
     })
       .then((res) => res.json())
       .then((result) => {

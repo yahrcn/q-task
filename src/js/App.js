@@ -1,20 +1,20 @@
 import React from "react";
 import { Switch, Route } from "react-router-dom";
-import { withRouter } from "react-router-dom/cjs/react-router-dom.min";
 
 import "../scss/index.scss";
-import {routes} from "./routes"
+import { ROUTES } from "./routes";
 
 class App extends React.Component {
   render() {
     return (
-        <Switch>
-          {routes.map((route, i) => (
-            <Route path={route.path} component={route.component} key={i} />
-          ))}
-        </Switch>
+      <Switch>
+        {Object.keys(ROUTES).map((key, i) => {
+          let route = ROUTES[key];
+          return <Route {...route} key={i} />;
+        })}
+      </Switch>
     );
   }
 }
 
-export default withRouter(App);
+export default App;

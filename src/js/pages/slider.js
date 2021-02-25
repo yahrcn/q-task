@@ -2,6 +2,16 @@ import React from "react";
 import { connect } from "react-redux";
 import { setImages } from "../redux/actions";
 
+const mapStateToProps = (store) => ({
+  photos: store.photos,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  setImages(images) {
+    dispatch(setImages(images));
+  },
+});
+
 class Slider extends React.Component {
   componentDidMount() {
     fetch("https://imagesapi.osora.ru/", {
@@ -9,7 +19,7 @@ class Slider extends React.Component {
     })
       .then((res) => res.json())
       .then((result) => {
-        this.props.dispatch(setImages(result));
+        this.props.setImages(result);
       });
   }
 
@@ -27,10 +37,4 @@ class Slider extends React.Component {
   }
 }
 
-const mapStateToProps = (store) => {
-  return {
-    photos: store.photos,
-  };
-};
-
-export default connect(mapStateToProps)(Slider);
+export default connect(mapStateToProps, mapDispatchToProps)(Slider);

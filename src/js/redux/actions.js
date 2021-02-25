@@ -1,3 +1,8 @@
-import { SET_IMAGES } from "./actionTypes";
+import * as actionTypes from "./actionTypes";
 
-export const setImages = (payload) => ({ type: SET_IMAGES, payload });
+export const setImages = (payload) => ({
+  type: actionTypes.SET_IMAGES,
+  payload,
+});
+
+export default setImages;

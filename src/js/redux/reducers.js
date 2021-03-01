@@ -3,8 +3,8 @@ import { initialState } from "./initialState";
 
 export function rootReducer(state = initialState, action) {
   switch (action.type) {
-    case actionTypes.SET_IMAGES:
-      return { ...state, photos: action.payload };
+    case actionTypes.SET_DATA:
+      return { ...state, data: action.payload };
     default:
       return state;
   }

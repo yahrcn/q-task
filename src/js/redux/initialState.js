@@ -1,5 +1,5 @@
 export const initialState = {
-  photos: [],
+  data: [],
 };
 
 export default initialState;

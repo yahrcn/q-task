@@ -6,11 +6,9 @@ export default class Sphere extends Common {
   constructor(props) {
     super(props);
     this.app = props.app;
-    this.data = props.data;
   }
 
   init = async () => {
-    console.log(this);
     return new Promise((resolve) => {
       this.location = new Location({ path: "locations/pano_1.png" });
       this.location.load().then((texture) => {
@@ -24,5 +22,23 @@ export default class Sphere extends Common {
         resolve(this);
       });
     });
+  };
+
+  changeTo = async (index) => {
+    let nextLocation = this.app.locations[index];
+    let _data = this.app.props.data[index];
+    if (!nextLocation) {
+      nextLocation = this.app.locations[index] = new Location({
+        app: this.app,
+        ..._data,
+      });
+    }
+
+    if (!nextLocation.texture) {
+      await nextLocation.load();
+    }
+
+    this.mesh.material.map = nextLocation.texture;
+    nextLocation.setArrows();
   };
 }

@@ -1,52 +1,40 @@
 import React from "react";
 import * as THREE from "three";
+import Models from "../models";
 
 export default class Main extends React.Component {
-  componentDidMount() {
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(
+  locations = {};
+  async componentDidMount() {
+    this.scene = new THREE.Scene();
+    this.camera = new THREE.PerspectiveCamera(
       75,
       window.innerWidth / window.innerHeight,
       0.1,
       1000
     );
 
-    const renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.getElementById("threejs").appendChild(renderer.domElement);
+    this.renderer = new THREE.WebGLRenderer();
+    this.light = new THREE.PointLight(0xff0000, 0.8);
+    this.light.position.set(0, 10, 10);
+    this.scene.add(this.light);
 
-    const planeGeometry = new THREE.PlaneGeometry(35, 35);
-    const planeMaterial = new THREE.MeshBasicMaterial({
-      color: 0x0000ff,
-      side: THREE.DoubleSide,
-    });
-    const plane = new THREE.Mesh(planeGeometry, planeMaterial);
-    plane.position.y = -5;
-    plane.rotation.x = -1.1;
-    plane.rotation.z = -0.5;
-    scene.add(plane);
+    this.sphere = new Models.Sphere({ app: this });
+    await this.sphere.init();
+    this.scene.add(this.sphere.mesh);
 
-    const sphereGeometry = new THREE.SphereGeometry(6, 30, 30);
-    const sphereMaterial = new THREE.MeshBasicMaterial({
-      color: 0x00ff00,
-      wireframe: true,
-    });
-    const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-    sphere.position.z = 10;
-    sphere.rotation.x = 0.3;
-    scene.add(sphere);
+    this.sphereOther = new Models.Sphere({ app: this });
+    await this.sphereOther.init();
+    this.sphereOther.mesh.position.z = -10;
+    this.scene.add(this.sphereOther.mesh);
+    this.camera.position.z = 1;
 
-    camera.position.z = 40;
-
-    const animate = function () {
-      requestAnimationFrame(animate);
-
-      sphere.rotation.y += 0.01;
-
-      renderer.render(scene, camera);
+    this.animate = () => {
+      requestAnimationFrame(this.animate);
+      this.renderer.render(this.scene, this.camera);
     };
-
-    animate();
+    this.animate();
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    document.getElementById("threejs").appendChild(this.renderer.domElement);
   }
   render() {
     return <div className="page" id="threejs"></div>;

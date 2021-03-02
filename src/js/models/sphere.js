@@ -6,9 +6,12 @@ export default class Sphere extends Common {
   constructor(props) {
     super(props);
     this.app = props.app;
+    this.data = props.app.props.data;
+    this.setId = props.setId;
   }
 
-  init = async () => {
+  init = async (id) => {
+    console.log(this.app.props.data);
     return new Promise((resolve) => {
       this.location = new Location({ path: "locations/pano_1.png" });
       this.location.load().then((texture) => {

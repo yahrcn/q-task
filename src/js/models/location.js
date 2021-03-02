@@ -20,7 +20,6 @@ export default class Location {
   };
 
   setArrows = () => {
-    console.log(this);
     return new Promise((resolve) => {
       let arrows = {};
       resolve(

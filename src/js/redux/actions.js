@@ -5,4 +5,9 @@ export const setData = (payload) => ({
   payload,
 });
 
+export const setId = (payload) => ({
+  type: actionTypes.SET_ID,
+  payload,
+});
+
 export default setData;

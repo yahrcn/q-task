@@ -11,9 +11,10 @@ export default class Sphere extends Common {
   }
 
   init = async (id) => {
-    console.log(this.app.props.data);
     return new Promise((resolve) => {
-      this.location = new Location({ path: "locations/pano_1.png" });
+      this.location = new Location({
+        path: this.data[id].path,
+      });
       this.location.load().then((texture) => {
         this.geometry = new THREE.SphereGeometry(1, 32, 32);
         this.material = new THREE.MeshBasicMaterial({
@@ -21,8 +22,9 @@ export default class Sphere extends Common {
           side: THREE.DoubleSide,
         });
         this.mesh = this.createMesh(this.geometry, this.material);
-        this.location.siblings = this.app.props.data[0].siblings;
+        this.location.siblings = this.data[id].siblings;
         this.location.app = this.app;
+        this.location.id = id;
         this.location.setArrows();
         resolve(this);
       });

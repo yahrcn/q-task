@@ -27,6 +27,7 @@ export default class Location {
           arrows[id] = new Arrow({ id, app: this.app });
           arrows[id].mesh.name = "arrow";
           this.app.scene.add(arrows[id].mesh);
+          this.arrows = arrows;
           return arrows[id];
         })
       );

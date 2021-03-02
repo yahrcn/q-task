@@ -19,12 +19,18 @@ export default class Location {
     });
   };
 
-  setArrows = (app) => {
-    this.arrows = {};
+  setArrows = () => {
+    console.log(this);
     return new Promise((resolve) => {
-      this.arrows[0] = new Arrow();
-      app.scene.add(this.arrows[0].mesh);
-      resolve();
+      let arrows = {};
+      resolve(
+        this.siblings.map((id) => {
+          arrows[id] = new Arrow({ id, app: this.app });
+          arrows[id].mesh.name = "arrow";
+          this.app.scene.add(arrows[id].mesh);
+          return arrows[id];
+        })
+      );
     });
   };
 }

@@ -18,7 +18,9 @@ export default class Sphere extends Common {
           side: THREE.DoubleSide,
         });
         this.mesh = this.createMesh(this.geometry, this.material);
-        this.location.setArrows(this.app);
+        this.location.siblings = this.app.props.data[0].siblings;
+        this.location.app = this.app;
+        this.location.setArrows();
         resolve(this);
       });
     });

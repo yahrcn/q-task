@@ -30,6 +30,7 @@ export default class Location {
         this.siblings.map((id) => {
           arrows[id] = new Arrow({ id, app: this.app });
           arrows[id].mesh.name = "arrow";
+          arrows[id].mesh.arrowId = id;
           this.app.scene.add(arrows[id].mesh);
           this.arrows = arrows;
           return arrows[id];

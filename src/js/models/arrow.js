@@ -2,6 +2,7 @@ import * as THREE from "three";
 import Common from "./common";
 
 export default class Arrow extends Common {
+  description;
   constructor(props) {
     super(props);
     this.app = props.app;
@@ -29,7 +30,8 @@ export default class Arrow extends Common {
     let siblings = this.data[this.currentId].siblings;
     let siblingsData = this.data[siblings[siblings.indexOf(this.id)]];
 
-    const direction = this.getDirection(
+    this.mesh.description = siblingsData.description;
+    const direction = this.app.getDirection(
       currentData.coords,
       siblingsData.coords
     );
@@ -42,22 +44,4 @@ export default class Arrow extends Common {
     this.mesh.lookAt(direction.x, direction.y, direction.z);
     this.mesh.rotateX(THREE.Math.degToRad(-45));
   };
-
-  getDirection(currentCoords, siblingCoords) {
-    const directionVector = {
-      x: siblingCoords.x - currentCoords.x,
-      y: siblingCoords.y - currentCoords.y,
-      z: siblingCoords.z - currentCoords.z,
-    };
-    const directionVectorLength = Math.hypot(
-      directionVector.x,
-      directionVector.y,
-      directionVector.z
-    );
-    return {
-      x: directionVector.x / directionVectorLength,
-      y: directionVector.y / directionVectorLength,
-      z: directionVector.z / directionVectorLength,
-    };
-  }
 }

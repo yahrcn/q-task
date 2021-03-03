@@ -7,6 +7,10 @@ export function rootReducer(state = initialState, action) {
       return { ...state, data: action.payload };
     case actionTypes.SET_ID:
       return { ...state, currentId: action.payload };
+    case actionTypes.SET_TOOLTIP:
+      return { ...state, tooltip: action.payload };
+    case actionTypes.SET_MOUSE:
+      return { ...state, mouse: action.payload };
     default:
       return state;
   }

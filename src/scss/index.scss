@@ -54,3 +54,16 @@ code {
     }
   }
 }
+
+.tooltip {
+  position: fixed;
+  width: auto;
+  height: auto;
+  z-index: 998;
+  color: #fff;
+  background-color: #000;
+  padding: 10px;
+  box-sizing: border-box;
+  border-radius: 5px;
+  font-size: 18px;
+}

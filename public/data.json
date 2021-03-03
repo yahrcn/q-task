@@ -7,7 +7,7 @@
       "y": 0,
       "z": 0
     },
-    "desctiption": "центр перекрестка",
+    "description": "центр перекрестка",
     "siblings": [1, 2, 3]
   },
   {
@@ -18,7 +18,7 @@
       "y": 0,
       "z": 0
     },
-    "desctiption": "у пекарни",
+    "description": "у пекарни",
     "siblings": [0, 4],
     "direction": 130
   },
@@ -30,7 +30,7 @@
       "y": 0,
       "z": 1
     },
-    "desctiption": "возле рекламы",
+    "description": "возле рекламы",
     "siblings": [0],
     "direction": 90
   },
@@ -42,7 +42,7 @@
       "y": 0,
       "z": 0
     },
-    "desctiption": "напротив пекарни",
+    "description": "напротив пекарни",
     "siblings": [0, 6]
   },
   {
@@ -53,7 +53,7 @@
       "y": 0,
       "z": -10
     },
-    "desctiption": "слева от пекарни",
+    "description": "слева от пекарни",
     "siblings": [1, 5],
     "direction": 90
   },
@@ -65,7 +65,7 @@
       "y": 0,
       "z": -20
     },
-    "desctiption": "еще левее пекарни",
+    "description": "еще левее пекарни",
     "siblings": [4],
     "direction": 90
   },
@@ -77,7 +77,7 @@
       "y": 0,
       "z": 0
     },
-    "desctiption": "еще дальше от пекарни",
+    "description": "еще дальше от пекарни",
     "siblings": [3]
   }
 ]

@@ -10,4 +10,14 @@ export const setId = (payload) => ({
   payload,
 });
 
+export const setTooltip = (payload) => ({
+  type: actionTypes.SET_TOOLTIP,
+  payload,
+});
+
+export const setMouse = (payload) => ({
+  type: actionTypes.SET_MOUSE,
+  payload,
+});
+
 export default setData;

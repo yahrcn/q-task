@@ -10,7 +10,7 @@ export default class Sphere extends Common {
     this.setId = props.setId;
   }
 
-  init = async (id = 0) => {
+  init = async (id = 0, opacity = 1) => {
     return new Promise((resolve) => {
       this.location = new Location({
         path: this.data[id].path,
@@ -21,6 +21,9 @@ export default class Sphere extends Common {
         this.material = new THREE.MeshBasicMaterial({
           map: texture,
           side: THREE.DoubleSide,
+          wireframe: false,
+          transparent: true,
+          opacity: opacity,
         });
         this.mesh = this.createMesh(this.geometry, this.material);
         this.mesh.scale.set(-1, 1, -1);
@@ -32,27 +35,28 @@ export default class Sphere extends Common {
             this.data[id].direction
           );
         }
-        this.location.setArrows();
         resolve(this);
       });
     });
   };
 
   changeTo = async (index) => {
-    let nextLocation = this.app.locations[index];
-    let _data = this.app.props.data[index];
-    if (!nextLocation) {
-      nextLocation = this.app.locations[index] = new Location({
+    let location = this.app.locations[index];
+    if (!location) {
+      location = this.app.locations[index] = new Location({
         app: this.app,
-        ..._data,
+        ...this.data[index],
       });
     }
 
-    if (!nextLocation.texture) {
-      await nextLocation.load();
+    if (!location.texture) {
+      await location.load();
     }
 
-    this.mesh.material.map = nextLocation.texture;
-    nextLocation.setArrows();
+    this.mesh.material.map = location.texture;
+    this.app.currentId = index;
+    this.app.props.setId(index);
+    this.mesh.rotation.y = THREE.MathUtils.degToRad(location.direction);
+    location.setArrows().then((result) => (this.app.arrows = result));
   };
 }

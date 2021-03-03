@@ -35,7 +35,7 @@ class Main extends React.Component {
   async componentDidMount() {
     let result = await fetch("/data.json").then((res) => res.json());
     this.props.setData(result);
-    this.props.setId(4);
+    this.props.setId(0);
 
     document.addEventListener("mousedown", this.onDocumentMouseDown, false);
     document.addEventListener("mousemove", this.onDocumentMouseMove, false);
@@ -46,7 +46,7 @@ class Main extends React.Component {
       75,
       window.innerWidth / window.innerHeight,
       0.1,
-      10000
+      1000
     );
     this.camera.target = new THREE.Vector3(0, 0, 0);
     this.renderer = new THREE.WebGLRenderer();
@@ -59,7 +59,7 @@ class Main extends React.Component {
     await this.sphere.init(this.props.currentId);
     this.scene.add(this.sphere.mesh);
 
-    // this.sphereOther = new Models.Sphere({ app: this, data: this.props.data });
+    // this.sphereOther = new Models.Sphere({ app: this });
     // await this.sphereOther.init();
     // this.sphereOther.mesh.position.z = -10;
     // this.scene.add(this.sphereOther.mesh);

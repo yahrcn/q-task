@@ -8,6 +8,10 @@ export default class Location {
     this.id = props.id;
     this.siblings = props.siblings;
     this.arrows = {};
+    this.direction = 0;
+    if (props.direction) {
+      this.direction = props.direction;
+    }
   }
 
   load = () => {

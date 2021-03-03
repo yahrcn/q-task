@@ -10,10 +10,11 @@ export default class Sphere extends Common {
     this.setId = props.setId;
   }
 
-  init = async (id) => {
+  init = async (id = 0) => {
     return new Promise((resolve) => {
       this.location = new Location({
         path: this.data[id].path,
+        ...this.data[id],
       });
       this.location.load().then((texture) => {
         this.geometry = new THREE.SphereGeometry(1, 32, 32);
@@ -22,9 +23,15 @@ export default class Sphere extends Common {
           side: THREE.DoubleSide,
         });
         this.mesh = this.createMesh(this.geometry, this.material);
+        this.mesh.scale.set(-1, 1, -1);
         this.location.siblings = this.data[id].siblings;
         this.location.app = this.app;
         this.location.id = id;
+        if (this.data[id].direction) {
+          this.mesh.rotation.y = THREE.MathUtils.degToRad(
+            this.data[id].direction
+          );
+        }
         this.location.setArrows();
         resolve(this);
       });

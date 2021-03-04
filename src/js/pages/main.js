@@ -41,6 +41,8 @@ class Main extends React.Component {
   dragFactor = 0.125;
   arrows = [];
   isUserInteracting = false;
+  inAnimation = false;
+  detectClick = false;
   mouse = new THREE.Vector2();
 
   async componentDidMount() {
@@ -52,6 +54,7 @@ class Main extends React.Component {
     document.addEventListener("mouseup", this.onDocumentMouseUp, false);
 
     this.scene = new THREE.Scene();
+    this.scene.background = new THREE.Color(0xf0f0f0);
     this.camera = new THREE.PerspectiveCamera(
       75,
       window.innerWidth / window.innerHeight,
@@ -75,7 +78,7 @@ class Main extends React.Component {
     this.sphereOther = new Models.Sphere({ app: this });
     await this.sphereOther.init(0, 0);
     this.sphereOther.mesh.name = "other";
-    this.sphereOther.mesh.position.z = -20;
+    this.sphereOther.mesh.position.z = -10;
     this.scene.add(this.sphereOther.mesh);
 
     this.sphere.changeTo(0);
@@ -89,11 +92,13 @@ class Main extends React.Component {
     this.downPointer.x = event.clientX;
     this.downPointer.y = event.clientY;
     this.isUserInteracting = true;
+    this.detectClick = true;
     this.mouseDownLat = this.lat;
     this.mouseDownLon = this.lon;
   };
 
   onDocumentMouseMove = (event) => {
+    this.detectClick = false;
     this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
@@ -109,7 +114,7 @@ class Main extends React.Component {
       }
     } else this.props.setTooltip("");
 
-    if (this.isUserInteracting) {
+    if (this.isUserInteracting && !this.inAnimation) {
       this.lon =
         (this.downPointer.x - event.clientX) * this.dragFactor +
         this.mouseDownLon;
@@ -122,11 +127,12 @@ class Main extends React.Component {
   onDocumentMouseUp = (event) => {
     this.downPointer.x = undefined;
     this.downPointer.y = undefined;
-    this.isUserInteracting = false;
     let arrow = this.detectMouseOnArrow();
-    if (arrow) {
+    if (arrow && this.detectClick) {
       this.cameraToMarker(arrow);
+      this.inAnimation = true;
     }
+    this.isUserInteracting = false;
   };
 
   getDirection = (currentCoords, siblingCoords) => {
@@ -158,43 +164,75 @@ class Main extends React.Component {
   };
 
   cameraToMarker = (arrow) => {
+    this.props.setTooltip("");
     this.arrows.forEach((arrow) => {
       this.scene.remove(arrow.mesh);
     });
     this.arrows = [];
-    this.props.setTooltip("");
+
+    const siblingData = this.props.data.find(
+      ({ id }) => id === arrow.object.arrowId
+    );
+    const currentData = this.props.data.find(
+      ({ id }) => id === this.props.currentId
+    );
+    const direction = this.getDirection(currentData.coords, siblingData.coords);
+    const newCoords = {
+      x: direction.x,
+      y: direction.y,
+      z: direction.z,
+    };
+    this.camera.target.x = newCoords.x;
+    this.camera.target.y = 0;
+    this.camera.target.z = newCoords.z;
+    this.radius = Math.hypot(newCoords.x, newCoords.y, newCoords.z);
+    this.phi = Math.acos(newCoords.y / this.radius);
+    this.theta = Math.atan2(newCoords.z, newCoords.x);
+    this.lon = THREE.Math.radToDeg(this.theta);
+    this.lat = 90 - THREE.Math.radToDeg(this.phi);
+
+    this.sphereOther.mesh.position.set(newCoords.x, newCoords.y, newCoords.z);
+    this.sphereOther.changeTo(arrow.object.arrowId, false);
+
+    let settings = {
+      x: this.sphereOther.mesh.position.x,
+      y: this.sphereOther.mesh.position.y,
+      z: this.sphereOther.mesh.position.z,
+      opacityMain: 1,
+      opacityOther: 0,
+    };
 
     setTimeout(() => {
-      this.sphereOther.mesh.position.set(0.05, 0, 0);
-      this.sphere.mesh.material.opacity = 0;
-      this.sphereOther.mesh.material.opacity = 1;
-      this.sphereOther.changeTo(arrow.object.arrowId);
-    }, 500);
-
-    // let settings = {
-    //   x: this.sphereOther.mesh.position.x,
-    //   y: this.sphereOther.mesh.position.y,
-    //   z: this.sphereOther.mesh.position.z,
-    // };
-
-    // setTimeout(() => {
-    //   new TWEEN.Tween(settings)
-    //     .to(
-    //       {
-    //         x: this.sphere.mesh.position.x,
-    //         y: this.sphere.mesh.position.y,
-    //         z: this.sphere.mesh.position.z,
-    //       },
-    //       500
-    //     )
-    //     .start()
-    //     .onComplete(() => {
-    //       this.sphereOther.mesh.position.set(0, 0, 0);
-    //       this.sphereOther.mesh.material.opacity = 1;
-    //       this.sphere.changeTo(arrow.object.arrowId);
-    //       this.sphere.mesh.material.opacity = 0;
-    //     });
-    // }, 500);
+      new TWEEN.Tween(settings)
+        .to(
+          {
+            x: this.sphere.mesh.position.x,
+            y: this.sphere.mesh.position.y,
+            z: this.sphere.mesh.position.z,
+            opacityMain: 0,
+            opacityOther: 1,
+          },
+          700
+        )
+        .onUpdate(() => {
+          this.sphereOther.mesh.material.opacity = settings.opacityOther;
+          this.sphereOther.mesh.position.set(
+            settings.x,
+            settings.y,
+            settings.z
+          );
+          this.sphere.mesh.material.opacity = settings.opacityMain;
+        })
+        .easing(TWEEN.Easing.Quadratic.Out)
+        .start()
+        .onComplete(() => {
+          this.sphere.changeTo(arrow.object.arrowId);
+          this.sphereOther.mesh.position.set(0, 0, -10);
+          this.sphereOther.mesh.material.opacity = 0;
+          this.sphere.mesh.material.opacity = 1;
+          this.inAnimation = false;
+        });
+    }, 700);
   };
 
   animate = (time) => {

@@ -40,7 +40,7 @@ export default class Sphere extends Common {
     });
   };
 
-  changeTo = async (index) => {
+  changeTo = async (index, needArrows = true) => {
     let location = this.app.locations[index];
     if (!location) {
       location = this.app.locations[index] = new Location({
@@ -54,9 +54,9 @@ export default class Sphere extends Common {
     }
 
     this.mesh.material.map = location.texture;
-    this.app.currentId = index;
     this.app.props.setId(index);
     this.mesh.rotation.y = THREE.MathUtils.degToRad(location.direction);
-    location.setArrows().then((result) => (this.app.arrows = result));
+    if (needArrows)
+      location.setArrows().then((result) => (this.app.arrows = result));
   };
 }

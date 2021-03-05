@@ -75,7 +75,6 @@ class Main extends React.Component {
     this.scene.add(this.light);
 
     this.sphere = new Models.Sphere({ app: this });
-    this.props.setId(0);
     await this.sphere.init(this.props.currentId);
     this.sphere.mesh.name = "main";
     this.scene.add(this.sphere.mesh);
@@ -179,23 +178,19 @@ class Main extends React.Component {
     const currentData = this.props.data[this.props.currentId];
 
     const direction = this.getDirection(currentData.coords, siblingData.coords);
-    const newCoords = {
-      x: direction.x,
-      y: direction.y,
-      z: direction.z,
-    };
+
     if (needAnimation) {
-      this.camera.target.x = newCoords.x;
+      this.camera.target.x = direction.x;
       this.camera.target.y = 0;
-      this.camera.target.z = newCoords.z;
-      this.radius = Math.hypot(newCoords.x, newCoords.y, newCoords.z);
-      this.phi = Math.acos(newCoords.y / this.radius);
-      this.theta = Math.atan2(newCoords.z, newCoords.x);
+      this.camera.target.z = direction.z;
+      this.radius = Math.hypot(direction.x, direction.y, direction.z);
+      this.phi = Math.acos(direction.y / this.radius);
+      this.theta = Math.atan2(direction.z, direction.x);
       this.lon = THREE.Math.radToDeg(this.theta);
       this.lat = 90 - THREE.Math.radToDeg(this.phi);
     }
 
-    this.sphereOther.mesh.position.set(newCoords.x, newCoords.y, newCoords.z);
+    this.sphereOther.mesh.position.set(direction.x, direction.y, direction.z);
     this.sphereOther.changeTo(locationId, false);
 
     let settings = {

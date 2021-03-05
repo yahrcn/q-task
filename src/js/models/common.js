@@ -1,5 +1,5 @@
-import * as THREE from "three";
+import { Mesh } from "three";
 
 export default class Common {
-  createMesh = (geometry, material) => new THREE.Mesh(geometry, material);
+  createMesh = (geometry, material) => new Mesh(geometry, material);
 }

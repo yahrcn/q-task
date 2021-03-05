@@ -3,16 +3,17 @@ import ReactDOM from "react-dom";
 import { BrowserRouter as Router } from "react-router-dom";
 import { Provider } from "react-redux";
 import reportWebVitals from "./reportWebVitals";
-
-import App from "./js/App";
-
 import { store } from "./js/config";
 import "./scss/index.scss";
+
+const App = React.lazy(() => import("./js/App"));
 
 ReactDOM.render(
   <Provider store={store}>
     <Router history>
-      <App />
+      <React.Suspense fallback={"Loading..."}>
+        <App />
+      </React.Suspense>
     </Router>
   </Provider>,
   document.getElementById("root")

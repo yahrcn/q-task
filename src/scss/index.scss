@@ -67,3 +67,59 @@ code {
   border-radius: 5px;
   font-size: 18px;
 }
+
+.map {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  .map__container {
+    position: relative;
+    width: 300px;
+    height: 200px;
+    background-color: #fff;
+    border-top-left-radius: 5px;
+    box-shadow: 0 0 5px 5px rgb(0 0 0 / 25%);
+    cursor: pointer;
+    .map__container__dot {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background-color: #000;
+      border-radius: 100%;
+    }
+    .map__container__dot.active {
+      background-color: #00ff47;
+    }
+  }
+}
+
+.map.active {
+  left: 0;
+  top: 0;
+  right: unset;
+  bottom: unset;
+  width: 100%;
+  height: 100%;
+  .map__container {
+    width: 600px;
+    height: 400px;
+    border-radius: 5px;
+    cursor: default;
+  }
+  .map__container__dot {
+    width: 45px;
+    height: 45px;
+    cursor: pointer;
+  }
+  .map__container__dot.active {
+    background-color: #00ff47;
+  }
+  .map__container__dot:hover {
+    background-color: #00ff47;
+  }
+}

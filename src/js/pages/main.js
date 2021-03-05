@@ -1,15 +1,17 @@
 import React from "react";
 import * as THREE from "three";
-import Models from "../models";
 import { connect } from "react-redux";
-import { setData, setId, setTooltip, setMouse } from "../redux/actions";
+import { setData, setId, setTooltip, setMouse, setMap } from "../redux/actions";
 import TWEEN from "@tweenjs/tween.js";
+import Map from "../components/Map";
+import Models from "../models";
 
 const mapStateToProps = (store) => ({
   data: store.data,
   currentId: store.currentId,
   tooltip: store.tooltip,
   mouse: store.mouse,
+  isMapOpened: store.isMapOpened,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -24,6 +26,9 @@ const mapDispatchToProps = (dispatch) => ({
   },
   setMouse(mouse) {
     dispatch(setMouse(mouse));
+  },
+  setMap(map) {
+    dispatch(setMap(map));
   },
 });
 
@@ -129,7 +134,7 @@ class Main extends React.Component {
     this.downPointer.y = undefined;
     let arrow = this.detectMouseOnArrow();
     if (arrow && this.detectClick) {
-      this.cameraToMarker(arrow);
+      this.cameraToMarker(arrow.object.arrowId);
       this.inAnimation = true;
     }
     this.isUserInteracting = false;
@@ -163,36 +168,35 @@ class Main extends React.Component {
     return false;
   };
 
-  cameraToMarker = (arrow) => {
+  cameraToMarker = (locationId, needAnimation = true) => {
     this.props.setTooltip("");
     this.arrows.forEach((arrow) => {
       this.scene.remove(arrow.mesh);
     });
     this.arrows = [];
 
-    const siblingData = this.props.data.find(
-      ({ id }) => id === arrow.object.arrowId
-    );
-    const currentData = this.props.data.find(
-      ({ id }) => id === this.props.currentId
-    );
+    const siblingData = this.props.data[locationId];
+    const currentData = this.props.data[this.props.currentId];
+
     const direction = this.getDirection(currentData.coords, siblingData.coords);
     const newCoords = {
       x: direction.x,
       y: direction.y,
       z: direction.z,
     };
-    this.camera.target.x = newCoords.x;
-    this.camera.target.y = 0;
-    this.camera.target.z = newCoords.z;
-    this.radius = Math.hypot(newCoords.x, newCoords.y, newCoords.z);
-    this.phi = Math.acos(newCoords.y / this.radius);
-    this.theta = Math.atan2(newCoords.z, newCoords.x);
-    this.lon = THREE.Math.radToDeg(this.theta);
-    this.lat = 90 - THREE.Math.radToDeg(this.phi);
+    if (needAnimation) {
+      this.camera.target.x = newCoords.x;
+      this.camera.target.y = 0;
+      this.camera.target.z = newCoords.z;
+      this.radius = Math.hypot(newCoords.x, newCoords.y, newCoords.z);
+      this.phi = Math.acos(newCoords.y / this.radius);
+      this.theta = Math.atan2(newCoords.z, newCoords.x);
+      this.lon = THREE.Math.radToDeg(this.theta);
+      this.lat = 90 - THREE.Math.radToDeg(this.phi);
+    }
 
     this.sphereOther.mesh.position.set(newCoords.x, newCoords.y, newCoords.z);
-    this.sphereOther.changeTo(arrow.object.arrowId, false);
+    this.sphereOther.changeTo(locationId, false);
 
     let settings = {
       x: this.sphereOther.mesh.position.x,
@@ -202,37 +206,40 @@ class Main extends React.Component {
       opacityOther: 0,
     };
 
-    setTimeout(() => {
-      new TWEEN.Tween(settings)
-        .to(
-          {
-            x: this.sphere.mesh.position.x,
-            y: this.sphere.mesh.position.y,
-            z: this.sphere.mesh.position.z,
-            opacityMain: 0,
-            opacityOther: 1,
-          },
-          700
-        )
-        .onUpdate(() => {
-          this.sphereOther.mesh.material.opacity = settings.opacityOther;
-          this.sphereOther.mesh.position.set(
-            settings.x,
-            settings.y,
-            settings.z
-          );
-          this.sphere.mesh.material.opacity = settings.opacityMain;
-        })
-        .easing(TWEEN.Easing.Quadratic.Out)
-        .start()
-        .onComplete(() => {
-          this.sphere.changeTo(arrow.object.arrowId);
-          this.sphereOther.mesh.position.set(0, 0, -10);
-          this.sphereOther.mesh.material.opacity = 0;
-          this.sphere.mesh.material.opacity = 1;
-          this.inAnimation = false;
-        });
-    }, 700);
+    setTimeout(
+      () => {
+        new TWEEN.Tween(settings)
+          .to(
+            {
+              x: this.sphere.mesh.position.x,
+              y: this.sphere.mesh.position.y,
+              z: this.sphere.mesh.position.z,
+              opacityMain: 0,
+              opacityOther: 1,
+            },
+            needAnimation ? 700 : 0
+          )
+          .onUpdate(() => {
+            this.sphereOther.mesh.material.opacity = settings.opacityOther;
+            this.sphereOther.mesh.position.set(
+              settings.x,
+              settings.y,
+              settings.z
+            );
+            this.sphere.mesh.material.opacity = settings.opacityMain;
+          })
+          .easing(TWEEN.Easing.Quadratic.Out)
+          .start()
+          .onComplete(() => {
+            this.sphere.changeTo(locationId);
+            this.sphereOther.mesh.position.set(0, 0, -10);
+            this.sphereOther.mesh.material.opacity = 0;
+            this.sphere.mesh.material.opacity = 1;
+            this.inAnimation = false;
+          });
+      },
+      needAnimation ? 700 : 0
+    );
   };
 
   animate = (time) => {
@@ -270,6 +277,7 @@ class Main extends React.Component {
             {this.props.tooltip}
           </div>
         )}
+        <Map app={this} />
       </>
     );
   }

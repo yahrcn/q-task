@@ -11,6 +11,8 @@ export function rootReducer(state = initialState, action) {
       return { ...state, tooltip: action.payload };
     case actionTypes.SET_MOUSE:
       return { ...state, mouse: action.payload };
+    case actionTypes.SET_MAP:
+      return { ...state, isMapOpened: action.payload };
     default:
       return state;
   }

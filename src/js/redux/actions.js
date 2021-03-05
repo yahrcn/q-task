@@ -20,4 +20,9 @@ export const setMouse = (payload) => ({
   payload,
 });
 
+export const setMap = (payload) => ({
+  type: actionTypes.SET_MAP,
+  payload,
+});
+
 export default setData;

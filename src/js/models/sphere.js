@@ -28,19 +28,6 @@ export default class Sphere extends Common {
         this.mesh = this.createMesh(this.geometry, this.material);
         this.mesh.scale.set(-1, 1, -1);
         this.location.siblings = this.data[id].siblings;
-        this.location.siblings.forEach((key) => {
-          let location = this.app.locations[key];
-          if (!location) {
-            location = this.app.locations[key] = new Location({
-              app: this.app,
-              ...this.data[key],
-            });
-          }
-
-          if (!location.texture) {
-            location.load();
-          }
-        });
         this.location.app = this.app;
         this.location.id = id;
         if (this.data[id].direction) {
@@ -65,6 +52,24 @@ export default class Sphere extends Common {
     if (!location.texture) {
       await location.load();
     }
+
+    this.location.path = this.data[index].path;
+    this.location.siblings = this.data[index].siblings;
+    this.location.app = this.app;
+    this.location.id = index;
+
+    this.location.siblings.forEach((key) => {
+      let location = this.app.locations[key];
+      if (!location) {
+        location = this.app.locations[key] = new Location({
+          app: this.app,
+          ...this.data[key],
+        });
+      }
+      if (!location.texture) {
+        location.load();
+      }
+    });
 
     this.mesh.material.map = location.texture;
     this.app.props.setId(index);

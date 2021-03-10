@@ -1,7 +1,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {Link} from 'react-router-native';
-import {setImages} from '../myRedux/actions';
+import {setImages} from '../redux/actions';
 import {ROUTES} from '../routes';
 import {Button, StyleSheet, View, Text, Image} from 'react-native';
 

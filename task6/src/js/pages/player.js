@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, Image} from 'react-native';
+import {View, Text} from 'react-native';
 import ControlButton from '../components/ControlButton';
 import TrackPlayer from 'react-native-track-player';
 
@@ -14,17 +14,12 @@ import styles from '../styles';
 class Player extends React.Component {
   state = {
     isPlaying: false,
-    currentSongId: 0,
     currentSong: {
       id: 0,
       title: '0',
       url: null,
     },
   };
-
-  constructor(props) {
-    super(props);
-  }
 
   async componentDidMount() {
     this.setup();
@@ -40,17 +35,22 @@ class Player extends React.Component {
       });
     });
     this.setState({currentSong: await TrackPlayer.getTrack('0')});
-    const playerState = await TrackPlayer.getState();
-    if (playerState === TrackPlayer.STATE_PLAYING) {
+    TrackPlayer.addEventListener('playback-track-changed', async (event) => {
+      const track = await TrackPlayer.getTrack(event.nextTrack);
+      this.setState({currentSong: track});
+    });
+    TrackPlayer.addEventListener('remote-play', () => {
       this.setState({isPlaying: true});
-    } else this.setState({isPlaying: false});
+    });
+    TrackPlayer.addEventListener('remote-pause', () => {
+      this.setState({isPlaying: false});
+    });
   }
 
   async setup() {
     await TrackPlayer.setupPlayer({});
     await TrackPlayer.updateOptions({
       stopWithApp: true,
-      alwaysPauseOnInterruption: true,
       capabilities: [
         TrackPlayer.CAPABILITY_PLAY,
         TrackPlayer.CAPABILITY_PAUSE,
@@ -66,19 +66,15 @@ class Player extends React.Component {
   }
 
   handleNextSong = async () => {
-    await TrackPlayer.skipToNext();
-    const currentTrack = await TrackPlayer.getTrack(
-      await TrackPlayer.getCurrentTrack(),
-    );
-    this.setState({currentSong: currentTrack});
+    try {
+      await TrackPlayer.skipToNext();
+    } catch (_) {}
   };
 
   handlePrevSong = async () => {
-    await TrackPlayer.skipToPrevious();
-    const currentTrack = await TrackPlayer.getTrack(
-      await TrackPlayer.getCurrentTrack(),
-    );
-    this.setState({currentSong: currentTrack});
+    try {
+      await TrackPlayer.skipToPrevious();
+    } catch (_) {}
   };
 
   handleMiddleButton = async () => {

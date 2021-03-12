@@ -19,6 +19,7 @@ class Player extends React.Component {
       title: '0',
       url: null,
     },
+    songsAmount: 100,
   };
 
   async componentDidMount() {
@@ -45,6 +46,12 @@ class Player extends React.Component {
     TrackPlayer.addEventListener('remote-pause', () => {
       this.setState({isPlaying: false});
     });
+    const queue = await TrackPlayer.getQueue();
+    this.setState({songsAmount: queue.length});
+  }
+
+  componentWillUnmount() {
+    TrackPlayer.pause();
   }
 
   async setup() {
@@ -56,7 +63,6 @@ class Player extends React.Component {
         TrackPlayer.CAPABILITY_PAUSE,
         TrackPlayer.CAPABILITY_SKIP_TO_NEXT,
         TrackPlayer.CAPABILITY_SKIP_TO_PREVIOUS,
-        TrackPlayer.CAPABILITY_STOP,
       ],
       compactCapabilities: [
         TrackPlayer.CAPABILITY_PLAY,
@@ -96,12 +102,25 @@ class Player extends React.Component {
             {'Title: ' + this.state.currentSong.title}
           </Text>
           <View style={styles.controls}>
-            <ControlButton title={'<<'} onPress={this.handlePrevSong} />
+            <ControlButton
+              title={'<<'}
+              onPress={this.handlePrevSong}
+              opacity={this.state.currentSong.id === '0' ? 0.5 : 1}
+            />
             <ControlButton
               title={this.state.isPlaying ? 'Pause' : 'Play'}
               onPress={this.handleMiddleButton}
             />
-            <ControlButton title={'>>'} onPress={this.handleNextSong} />
+            <ControlButton
+              title={'>>'}
+              onPress={this.handleNextSong}
+              opacity={
+                this.state.currentSong.id ===
+                (this.state.songsAmount - 1).toString()
+                  ? 0.5
+                  : 1
+              }
+            />
           </View>
         </View>
       </View>

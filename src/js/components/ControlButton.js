@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text, TouchableOpacity} from 'react-native';
+import {Text, View} from 'react-native';
 import styles from '../styles';
 
 class ControlButton extends React.Component {
@@ -10,11 +10,11 @@ class ControlButton extends React.Component {
 
   render() {
     return (
-      <TouchableOpacity
-        style={styles.controlButtonContainer}
-        onPress={this.onPress}>
-        <Text style={styles.controlButtonText}>{this.props.title}</Text>
-      </TouchableOpacity>
+      <View style={{flex: 1, opacity: this.props.opacity}}>
+        <Text style={styles.controlButtonText} onPress={this.onPress}>
+          {this.props.title}
+        </Text>
+      </View>
     );
   }
 }

@@ -5,6 +5,8 @@ import {setImages} from '../redux/actions';
 import {ROUTES} from '../routes';
 import {Button, StyleSheet, View, Text, Image} from 'react-native';
 
+import styles from '../styles';
+
 import first from '../../img/1.jpg';
 import second from '../../img/2.jpg';
 import third from '../../img/3.jpg';
@@ -110,41 +112,5 @@ class Slider extends React.Component {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#ffffff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  sliderWrapper: {
-    display: 'flex',
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  slider: {
-    margin: 10,
-    width: 250,
-    height: 200,
-    resizeMode: 'cover',
-    backgroundColor: '#ffffff',
-  },
-  button: {
-    padding: 10,
-    backgroundColor: '#000',
-    color: '#fff',
-    fontSize: 16,
-  },
-  button_switch: {
-    padding: 10,
-    backgroundColor: '#000',
-    color: '#fff',
-    fontSize: 16,
-    marginBottom: 10,
-  },
-});
 
 export default connect(mapStateToProps, mapDispatchToProps)(Slider);

@@ -16,7 +16,7 @@ class Player extends React.Component {
     isPlaying: false,
     currentSong: {
       id: 0,
-      title: '0',
+      title: 'Загрузка...',
       url: null,
     },
     songsAmount: 100,
@@ -36,14 +36,17 @@ class Player extends React.Component {
       });
     });
     this.setState({currentSong: await TrackPlayer.getTrack('0')});
-    TrackPlayer.addEventListener('playback-track-changed', async (event) => {
-      const track = await TrackPlayer.getTrack(event.nextTrack);
-      this.setState({currentSong: track});
-    });
-    TrackPlayer.addEventListener('remote-play', () => {
+    this.playback = TrackPlayer.addEventListener(
+      'playback-track-changed',
+      async (event) => {
+        const track = await TrackPlayer.getTrack(event.nextTrack);
+        this.setState({currentSong: track});
+      },
+    );
+    this.remotePlay = TrackPlayer.addEventListener('remote-play', () => {
       this.setState({isPlaying: true});
     });
-    TrackPlayer.addEventListener('remote-pause', () => {
+    this.remotePause = TrackPlayer.addEventListener('remote-pause', () => {
       this.setState({isPlaying: false});
     });
     const queue = await TrackPlayer.getQueue();
@@ -51,9 +54,9 @@ class Player extends React.Component {
   }
 
   componentWillUnmount() {
-    this.setState = (state, callback) => {
-      return;
-    };
+    this.remotePause.remove();
+    this.remotePlay.remove();
+    this.playback.remove();
     TrackPlayer.pause();
   }
 
@@ -90,10 +93,10 @@ class Player extends React.Component {
     const playerState = await TrackPlayer.getState();
     if (playerState === TrackPlayer.STATE_PLAYING) {
       TrackPlayer.pause();
-      this.setState({isPlaying: false});
+      // this.setState({isPlaying: false});
     } else {
       TrackPlayer.play();
-      this.setState({isPlaying: true});
+      // this.setState({isPlaying: true});
     }
   };
 

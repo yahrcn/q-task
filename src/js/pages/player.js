@@ -51,6 +51,9 @@ class Player extends React.Component {
   }
 
   componentWillUnmount() {
+    this.setState = (state, callback) => {
+      return;
+    };
     TrackPlayer.pause();
   }
 
